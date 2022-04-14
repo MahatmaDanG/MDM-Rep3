@@ -20,8 +20,9 @@ def StocksOwned(I,ISP):
     return(Owned) 
 
 def StockSim(RO,SO,Price):
-    StockRand = r.random()              # Chooses whether stock increases or decreases
     Severity = r.random()*SO            # Uses a random variable and a controlled waiting to control stock varition
+    StockRand = r.random()              # Chooses whether stock increases or decreases
+    
     if StockRand < Stability:           
         Price += Price*Severity
     elif StockRand > Stability:
