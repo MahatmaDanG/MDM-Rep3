@@ -63,10 +63,9 @@ def publicPerception(div, SO_list, perception_t_list):
 
     publicPerception_t = dividendsConstant * div + sharePriceConstant * SO_list[-1] + numericalDifferentiation(SO_list) * changeInSharePriceConstant # equation for change in opinion
     
-    publicPerception = numericalIntegration(perception_t_list) # integrate to find a value
     perception_t_list.append(publicPerception_t) #A list is needed to integrate back over time
     
-    return publicPerception, perception_t_list
+    return perception_t_list
 
 
 Minutes = [0]
@@ -76,9 +75,8 @@ Vs_t = I_Stock_Price
 No_Owned = StocksOwned(Investment, I_Stock_Price)
 
 for loop in range(10000):                        # The total amount of minutes simulated
-    perception_info = publicPerception(DividendPercent, Value, perception_t_list) #Produces a perception value using dividends, stock value and change in stock value
-    perception_t_list = perception_info[1]
-    perception = perception_info[0]
+    perception_t_list = publicPerception(DividendPercent, Value, perception_t_list) #Produces a perception value using dividends, stock value and change in stock value
+    perception = numericalIntegration(perception_t_list) # integrate to find a value
     Vs_t = StockSim(Stability, Severity_Control, Vs_t, perception)
     Dividend_at_t = DividendPercent * Vs_t
     Vi_t = No_Owned*(Vs_t + Dividend_at_t)
