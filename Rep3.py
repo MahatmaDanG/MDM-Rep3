@@ -22,9 +22,10 @@ def StocksOwned(I,ISP):
 def StockSim(RO,SO,Price,perception):
     Severity = r.random()*SO            # Uses a random variable and a controlled waiting to control stock varition
     StockRand = r.random()              # Chooses whether stock increases or decreases
-    price_t = Price*Severity*perception
+    price_t = Price*Severity
+    print('change in price: ', price_t)
     if StockRand < Stability:           
-        Price += price_t
+        Price += price_t + perception
     elif StockRand > Stability:
         Price -= price_t
     return(Price)
@@ -44,22 +45,18 @@ def numericalDifferentiation(data_list): # differentiating discrete data
     #print(differential)
     return differential
 
-def numericalIntegration(dataList): # integrating discrete data
-    total = 0
-    if len(dataList) == 0:
-        total = 0
-    elif len(dataList) == 1:
-        total = dataList[0]
-    else:
-        for i in range(len(dataList)-1):
-            total = total + (dataList[i] + dataList[i+1]/2) # Assuming a time interval of 1
+def numericalIntegration(data_list): # integrating discrete data
+    if len(data_list) < 2:
+        return 0
+    
+    integral = (data_list[-2] + data_list[-1])/2 # Assuming a time interval of 1
     #print('total:', total)
-    return total
+    return integral
 
 def publicPerception(div, SO_list, perception_t_list):
     dividendsConstant = 0.00005
-    sharePriceConstant = 0.00002
-    changeInSharePriceConstant = 0.00001
+    sharePriceConstant = 0.000002
+    changeInSharePriceConstant = 0.0000001
 
     publicPerception_t = dividendsConstant * div + sharePriceConstant * SO_list[-1] + numericalDifferentiation(SO_list) * changeInSharePriceConstant # equation for change in opinion
     
