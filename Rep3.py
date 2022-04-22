@@ -8,27 +8,27 @@ import random as r
 import matplotlib.pyplot as plt
 
 
-Investment = 50                         # The initial investment in pounds
-I_Stock_Price = 5                       # The initial price of a stock
-Stability = 0.5                         # The odds of a stock increasing in one simulation cycle, 1 being guaranteed increae
-Severity_Control = 0.01                 # Control for how much the stock can vary each cycle
-DividendPercent = 0.01                  # Fine tuning for the impact of dividend
+Investment_0 = 1000                     # The initial investment in pounds
+Stock_0 = 10                            # The initial price of a stock
+Stability = 0.5                         # The probability of a stock increasing in one simulation cycle, 1 being guaranteed increase
+Volatility_Control = 0.005               # Value that controls how much the stock can vary each cycle
+DividendPercent = 0.01                  # The value of dividend as a percentage of the stock price
 
 
 def StocksOwned(I,ISP):
     Owned = I/ISP
     return(Owned) 
 
-def StockSim(RO,SO,Price,perception):
-    Severity = r.random()*SO            # Uses a random variable and a controlled waiting to control stock varition
-    StockRand = r.random()              # Chooses whether stock increases or decreases
-    price_t = Price*Severity
-    print('change in price: ', price_t)
+def StockSim(Stability, Volatility_Control, Stock_t, perception):
+    Volatility = r.random()*Volatility_Control       # Uses a random variable and a controlled waiting to control stock varition
+    StockRand = r.random()                           # Chooses whether stock increases or decreases
+    Stock_change = Stock_t * Volatility
+    #print('change in price: ', Stock_change)
     if StockRand < Stability:           
-        Price += price_t + perception
+        Stock_t += Stock_change + perception 
     elif StockRand > Stability:
-        Price -= price_t
-    return(Price)
+        Stock_t -= Stock_change + perception 
+    return(Stock_t)
     
     
 def GraphPlot(M,V):
@@ -54,30 +54,30 @@ def numericalIntegration(data_list): # integrating discrete data
     return integral
 
 def publicPerception(div, SO_list, perception_t_list):
-    dividendsConstant = 0.00005
-    sharePriceConstant = 0.000002
-    changeInSharePriceConstant = 0.0000001
+    dividendConstant = 0.01
+    sharePriceConstant = 0.000000001
+    changeInSharePriceConstant = 0.000001
 
-    publicPerception_t = dividendsConstant * div + sharePriceConstant * SO_list[-1] + numericalDifferentiation(SO_list) * changeInSharePriceConstant # equation for change in opinion
+    perception_t = dividendConstant * div + sharePriceConstant * SO_list[-1] + numericalDifferentiation(SO_list) * changeInSharePriceConstant # equation for change in opinion
     
-    perception_t_list.append(publicPerception_t) #A list is needed to integrate back over time
+    perception_t_list.append(perception_t) #A list is needed to integrate back over time
     
     return perception_t_list
 
 
 Minutes = [0]
-Value = [Investment]    
+Value = [Investment_0]    
 perception_t_list = []
-Vs_t = I_Stock_Price
-No_Owned = StocksOwned(Investment, I_Stock_Price)
+Stock_t = Stock_0
+No_Owned = StocksOwned(Investment_0, Stock_0)
 
-for loop in range(10000):                        # The total amount of minutes simulated
+for loop in range(20000):                        # The total amount of minutes simulated
     perception_t_list = publicPerception(DividendPercent, Value, perception_t_list) #Produces a perception value using dividends, stock value and change in stock value
     perception = numericalIntegration(perception_t_list) # integrate to find a value
-    Vs_t = StockSim(Stability, Severity_Control, Vs_t, perception)
-    Dividend_at_t = DividendPercent * Vs_t
-    Vi_t = No_Owned*(Vs_t + Dividend_at_t)
+    Stock_t = StockSim(Stability, Volatility_Control, Stock_t, perception)
+    Dividend_t = DividendPercent * Stock_t
+    Investment_t = No_Owned*(Stock_t + Dividend_t)
     Minutes.append(loop)
-    Value.append(Vi_t)
+    Value.append(Investment_t)
 GraphPlot(Minutes, Value)
     
