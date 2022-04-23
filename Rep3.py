@@ -38,10 +38,10 @@ def StockSim(Stability, Volatility_Control, Stock_t, perception):
     return(Stock_t)
     
     
-def GraphPlot(M,V,num):
-    plt.plot(M,V)
-    plt.title('Value of Investment Vs Minute')
-    plt.xlabel('Minute')
+def GraphPlot(H,V,num):
+    plt.plot(H,V)
+    plt.title('Value of Investment Vs Time')
+    plt.xlabel('Hour(s)')
     plt.ylabel('Value of Investment')
     plt.savefig("Plots/" + str(num) +".png")
     plt.show()
@@ -90,7 +90,7 @@ def VariableSaving(Variables):
         File.close
     return(CycleNum)
 
-Minutes = [0]
+Hours = [0]
 Value = [Investment_0]    
 perception_t_list = []
 Stock_t = Stock_0
@@ -99,16 +99,20 @@ No_Owned = StocksOwned(Investment_0, Stock_0)
     
 CycleNumber = VariableSaving((Investment_0,Stock_0,Stability,Volatility_Control,DividendPercent, dividendConstant, sharePriceConstant, changeInSharePriceConstant))
 
-for loop in range(20000):                        # The total amount of minutes simulated
+# Note 17520 is the number of hours in 2 (365 day) years
+
+for loop in range(17520):                        # The total amount of minutes simulated
+    Dividend_t = 0
     perception_t_list = publicPerception(DividendPercent, Value, perception_t_list, dividendConstant, sharePriceConstant, changeInSharePriceConstant) #Produces a perception value using dividends, stock value and change in stock value
     perception = numericalIntegration(perception_t_list) # integrate to find a value
     Stock_t = StockSim(Stability, Volatility_Control, Stock_t, perception)
-    Dividend_t = DividendPercent * Stock_t
+    if loop%2190 == 0:
+        Dividend_t = DividendPercent * Stock_t
     Investment_t = No_Owned*(Stock_t + Dividend_t)
-    Minutes.append(loop)
+    Hours.append(loop)
     Value.append(Investment_t)
 
 
 
-GraphPlot(Minutes, Value, CycleNumber)
+GraphPlot(Hours, Value, CycleNumber)
     
