@@ -95,19 +95,18 @@ Value = [Investment_0]
 perception_t_list = []
 Stock_t = Stock_0
 No_Owned = StocksOwned(Investment_0, Stock_0)
-
+Dividend_t = 0
     
 CycleNumber = VariableSaving((Investment_0,Stock_0,Stability,Volatility_Control,DividendPercent, dividendConstant, sharePriceConstant, changeInSharePriceConstant))
 
 # Note 17520 is the number of hours in 2 (365 day) years
 
 for loop in range(17520):                        # The total amount of minutes simulated
-    Dividend_t = 0
     perception_t_list = publicPerception(DividendPercent, Value, perception_t_list, dividendConstant, sharePriceConstant, changeInSharePriceConstant) #Produces a perception value using dividends, stock value and change in stock value
     perception = numericalIntegration(perception_t_list) # integrate to find a value
     Stock_t = StockSim(Stability, Volatility_Control, Stock_t, perception)
     if loop%2190 == 0 and loop != 0 :
-        Dividend_t = DividendPercent * Stock_t
+        Dividend_t += DividendPercent * Stock_t
     Investment_t = No_Owned*(Stock_t + Dividend_t)
     Hours.append(loop)
     Value.append(Investment_t)
